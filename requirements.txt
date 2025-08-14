@@ -1,0 +1,6 @@
+dagster==1.7.*
+dagster-webserver==1.7.*
+requests==2.*
+psycopg2-binary==2.*
+python-dotenv==1.*
+flask==2.*

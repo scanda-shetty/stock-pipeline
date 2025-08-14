@@ -1,0 +1,62 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16
+    env_file: .env
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  dagster-webserver:
+    image: skandasshetty846/8byteai-stock-pipeline:latest
+    env_file: .env
+    environment:
+      DAGSTER_HOME: /workspace
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "${DAGSTER_PORT:-3000}:3000"
+    volumes:
+      - .:/workspace   # Mount current folder into container
+    command: >
+      bash -lc "dagster-webserver -h 0.0.0.0 -p 3000 -w /workspace/workspace.yaml"
+
+  dagster-daemon:
+    image: skandasshetty846/8byteai-stock-pipeline:latest
+    env_file: .env
+    environment:
+      DAGSTER_HOME: /workspace
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - .:/workspace
+    command: >
+      bash -lc "dagster-daemon run -w /workspace/workspace.yaml"
+
+  flask-app:
+    image: skandasshetty846/8byteai-stock-pipeline:latest               
+    env_file: .env
+    depends_on:
+    - postgres
+    ports:
+      - "3001:3001"           
+    command: >
+      bash -c "python display.py"
+
+
+volumes:
+  pgdata:
