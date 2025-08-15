@@ -15,7 +15,7 @@ $ docker compose up -d
 ```
 5. Pipeline is scheduled to fetch data every 5 minutes.
 
-You can view the Dagster logs using command
+You can view the Dagster logs using command (Find the daemon name using docker ps)
 ``` bash
 $ docker logs 'Your-dagster-daemon-name'
 ```
