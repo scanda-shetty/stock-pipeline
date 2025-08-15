@@ -1,4 +1,4 @@
-## Automated Stock Data Pipelinu Using Dagster
+## Automated Stock Data Pipeline Using Dagster
 This project provides an Dockerized stock data pipeline automated using Dagster. The pipeline fetches stock market data for each stock, every 5 minutes and stores it in a Postgres database. 
 The data in DB is displayed using a Flask Endpoint.
 
