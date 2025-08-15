@@ -113,29 +113,25 @@ def insert_rows(rows):
     finally:
         conn.close()
 
-def run_pipeline_once():
+def run_pipeline_for_symbol(symbol):
     if not API_KEY:
         raise RuntimeError("Alpha Vantage API Key is not set")
-    for i, symbol in enumerate(SYMBOLS):
-        logging.info("Fetching %s (%d/%d)", symbol, i + 1, len(SYMBOLS))
-        try:
-            series = fetch_symbol_daily_adjusted(symbol)
-            rows = parse_rows(symbol, series)
-            rows.sort(key=lambda r: r[1])
+    logging.info("Fetching data for %s", symbol)
+    try:
+        series = fetch_symbol_daily_adjusted(symbol)
+        rows = parse_rows(symbol, series)
+        rows.sort(key=lambda r: r[1])
 
-            max_date = get_max_date(symbol)
-            logging.info("Fetching %s", max_date)
-            if max_date is None:
-                rows_to_insert = rows[-100:]
-                logging.info("IF %d", len(rows_to_insert))
-            else:
-                rows_to_insert = [x for x in rows if x[1] > str(max_date)]
-                logging.info("ELSE %d", len(rows_to_insert))
+        max_date = get_max_date(symbol)
+        if max_date is None:
+            rows_to_insert = rows[-100:]
+        else:
+            rows_to_insert = [x for x in rows if x[1] > str(max_date)]
 
-            insert_rows(rows_to_insert)
-        except DataFetchError as e:
-            logging.warning("Skipping %s due to error: %s", symbol, e)
-        time.sleep(15)
+        insert_rows(rows_to_insert)
+    except DataFetchError as e:
+        logging.warning("Skipping %s due to error: %s", symbol, e)
 
 if __name__ == "__main__":
-    run_pipeline_once()
+    for symbol in SYMBOLS:
+        run_pipeline_for_symbol(symbol)

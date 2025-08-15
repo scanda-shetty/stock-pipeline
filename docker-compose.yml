@@ -21,6 +21,7 @@ services:
 
   dagster-webserver:
     image: skandasshetty846/8byteai-stock-pipeline:latest
+    # build: .
     env_file: .env
     environment:
       DAGSTER_HOME: /workspace
@@ -30,12 +31,13 @@ services:
     ports:
       - "${DAGSTER_PORT:-3000}:3000"
     volumes:
-      - .:/workspace   # Mount current folder into container
+      - .:/workspace   
     command: >
       bash -lc "dagster-webserver -h 0.0.0.0 -p 3000 -w /workspace/workspace.yaml"
 
   dagster-daemon:
     image: skandasshetty846/8byteai-stock-pipeline:latest
+    # build: .
     env_file: .env
     environment:
       DAGSTER_HOME: /workspace
@@ -48,7 +50,8 @@ services:
       bash -lc "dagster-daemon run -w /workspace/workspace.yaml"
 
   flask-app:
-    image: skandasshetty846/8byteai-stock-pipeline:latest               
+    image: skandasshetty846/8byteai-stock-pipeline:latest      
+    # build: .         
     env_file: .env
     depends_on:
     - postgres
