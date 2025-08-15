@@ -7,13 +7,13 @@ The data in DB is displayed using a Flask Endpoint.
 2. Clone the Repository
 3. Open the command prompt for this directory and pull the image from docker using
 ``` bash
-   $ docker pull skandasshetty846/8byteai-stock-pipeline:latest
+$ docker pull skandasshetty846/8byteai-stock-pipeline:latest
 ```
-5. Build the project
+4. Build the project
 ``` bash
-   $ docker compose up -d
+$ docker compose up -d
 ```
-7. Pipeline is scheduled to fetch data every 5 minutes.
+5. Pipeline is scheduled to fetch data every 5 minutes.
 
 You can view the Dagster logs using command
 ``` bash
